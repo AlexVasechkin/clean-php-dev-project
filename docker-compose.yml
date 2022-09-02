@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  proxy:
+    image: nginx:alpine
+    depends_on:
+      - php_fpm
+    ports:
+     - "6080:6080"
+    volumes:
+     - ./docker-res/nginx:/etc/nginx/conf.d
+     - ./backend/app:/app/code
+
+  php_fpm:
+    image: webdevops/php:$PHP_VERSION-alpine
+    depends_on:
+      - db
+    volumes:
+     - ./backend/app:/app/code
+
+  db:
+    image: postgres:13
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db/postgres:/var/lib/postgresql/data
